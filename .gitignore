@@ -1,0 +1,68 @@
+# ==============================================================================
+# Django & Python
+# ==============================================================================
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.cfg
+*.ephemeral
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Environment variables (NUNCA envie senhas e chaves para o Git)
+.env
+.env.*
+!.env.example
+training_docs
+# Virtual Environments (caso use localmente fora do Docker)
+.venv/
+venv/
+env/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ==============================================================================
+# Docker
+# ==============================================================================
+.dockerignore
+# Ignorar arquivos de log do Docker se gerados no host
+*.log
+docker-compose.override.yml
+
+# ==============================================================================
+# PostgreSQL / Banco de Dados (Docker Volumes locais)
+# ==============================================================================
+# Se você mapear o volume do banco para uma pasta local, mude o nome abaixo
+# para bater com o nome da pasta que você criou (ex: pgdata/, postgres_data/)
+postgres_data/
+pgdata/
+*.sql
+*.dump
+
+# ==============================================================================
+# IDEs e Editores de Código
+# ==============================================================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*~
+
+# ==============================================================================
+# Testes e Cobertura
+# ==============================================================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.pytest_cache/
