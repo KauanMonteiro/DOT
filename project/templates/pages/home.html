@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<body>
+{% include "partials/header.html" %}
+
+<main class="page-main">
+
+  <div class="page-heading">
+    <h2 class="page-heading__title">Seus projetos</h2>
+    <p class="page-heading__subtitle">Acompanhe e gerencie tudo o que você está construindo.</p>
+  </div>
+
+  <div class="add-project">
+    <a href="#" class="btn-primary btn-glow add-project__btn">
+      <i class="fas fa-plus"></i> Adicionar projeto
+    </a>
+    <p class="help-text">Crie um novo projeto para começar a organizar suas tarefas e arquivos.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  {% if projects %}
+  <div class="project-grid">
+    {% for project in projects %}
+      {% include "partials/project_card.html" with project=project %}
+    {% endfor %}
+  </div>
+  {% else %}
+  {% endif %}
+
+</main>
+
+{% include "partials/footer.html" %}
+</body>
+</html>
