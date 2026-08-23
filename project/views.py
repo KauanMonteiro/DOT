@@ -96,6 +96,9 @@ def project_detail(request, project_id):
             .filter(deadline__isnull=False, deadline__gte=timezone.localdate())
             .exclude(status="done")
             .order_by("deadline")[:6],
+        "overdue_tasks": project.tasks
+            .filter(deadline__isnull=True, status="todo")  # placeholder — ver nota abaixo
+            .none(),
     }
     return render(request, "pages/project_detail.html", context)
 
@@ -162,8 +165,12 @@ def update_task_status(request, project_id, task_id):
     )
     task = get_object_or_404(project.tasks.filter(can_edit_task), pk=task_id)
 
-    return redirect("project_detail", project_id=project.id)
+    new_status = request.POST.get("status")
+    if new_status in dict(Task.STATUS_CHOICES):
+        task.status = new_status
+        task.save(update_fields=["status", "updated_at"])
 
+    return redirect("project_detail", project_id=project.id)
 
 @login_required
 @require_POST
@@ -179,3 +186,50 @@ def remove_task_from_sprint(request, project_id, task_id):
     task.save(update_fields=["sprint"])
 
     return redirect(f"{reverse('project_detail', args=[project.id])}#backlog")
+
+@login_required
+def edit_task(request, project_id, task_id):
+    project = _get_owned_or_member_project(request, project_id)
+    can_edit_task = (
+        Q(assignee=request.user)
+        | Q(project__owner=request.user)
+        | Q(project__memberships__member=request.user, project__memberships__role="admin")
+    )
+    task = get_object_or_404(project.tasks.filter(can_edit_task), pk=task_id)
+
+    form = TaskForm(request.POST or None, instance=task, project=project)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Task atualizada com sucesso!")
+            return redirect("project_detail", project_id=project.id)
+        else:
+            messages.error(request, "Erro ao atualizar a task. Verifique os campos informados.")
+
+    return render(request, "pages/form.html", {"form": form, "project": project, "task": task})
+
+@login_required
+def edit_sprint(request, project_id, sprint_id):
+    project = _get_project_as_owner_or_admin(request, project_id)  # só owner ou admin editam sprint
+    sprint = get_object_or_404(project.sprints, pk=sprint_id)
+
+    form = SprintForm(request.POST or None, instance=sprint)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sprint atualizada com sucesso!")
+            return redirect("project_detail", project_id=project.id)
+        else:
+            messages.error(request, "Erro ao atualizar a sprint. Verifique os campos informados.")
+
+    return render(request, "pages/form.html", {"form": form, "project": project, "sprint": sprint})
+
+
+@login_required
+@require_POST
+def delete_sprint(request, project_id, sprint_id):
+    project = _get_project_as_owner_or_admin(request, project_id)  # só owner ou admin apagam sprint
+    sprint = get_object_or_404(project.sprints, pk=sprint_id)
+    sprint.delete()
+    messages.success(request, "Sprint removida com sucesso!")
+    return redirect("project_detail", project_id=project.id)

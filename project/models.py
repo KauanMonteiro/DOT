@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from django.utils import timezone
 
 class Project(models.Model):
     name = models.CharField(max_length=50)
@@ -51,7 +51,9 @@ class Sprint(models.Model):
     def clean(self):
         if self.start_date and self.end_date and self.end_date <= self.start_date:
             raise ValidationError("end_date deve ser posterior a start_date.")
-
+    @property
+    def is_over(self):
+        return self.end_date < timezone.localdate()
 
 class Task(models.Model):
     STATUS_CHOICES = [
@@ -98,6 +100,12 @@ class Task(models.Model):
             models.Index(fields=["status"]),
             models.Index(fields=["deadline"]),
         ]
-
+    @property
+    def is_overdue(self):
+        return (
+            self.deadline is not None
+            and self.deadline < timezone.localdate()
+            and self.status != "done"
+        )
     def __str__(self):
         return self.title

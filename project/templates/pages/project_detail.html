@@ -38,10 +38,31 @@
     <div class="divider"></div>
 
     <section class="sprint-section">
-      <div class="page-heading">
-        <h2 class="page-heading__title">Current Sprint</h2>
+      <div class="page-heading page-heading--with-actions">
+        <div>
+          <h2 class="page-heading__title">Current Sprint</h2>
+          {% if sprint %}
+            <p class="page-heading__subtitle">
+              {{ sprint.start_date }} → {{ sprint.end_date }}
+              {% if sprint.is_over %}
+                <span class="badge badge-muted">Encerrada</span>
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+
         {% if sprint %}
-          <p class="page-heading__subtitle">{{ sprint.start_date }} → {{ sprint.end_date }}</p>
+          <div class="btn-group">
+            <a href="{% url 'sprint_edit' project.id sprint.id %}" class="task-card__trash-btn" title="Editar sprint" aria-label="Editar sprint">
+              <i class="fas fa-pen" aria-hidden="true"></i>
+            </a>
+            <form method="post" action="{% url 'sprint_delete' project.id sprint.id %}" onsubmit="return confirm('Tem certeza que deseja apagar esta sprint? As tasks vinculadas voltarão para o backlog.');">
+              {% csrf_token %}
+              <button type="submit" class="task-card__trash-btn" title="Apagar sprint" aria-label="Apagar sprint">
+                <i class="fas fa-trash" aria-hidden="true"></i>
+              </button>
+            </form>
+          </div>
         {% endif %}
       </div>
 
@@ -59,9 +80,15 @@
   <div class="board-column">
     <h3 class="board-column__title">TODO</h3>
     {% for task in sprint.todo_tasks %}
-      <div class="task-card">
+      <div class="task-card {% if task.is_overdue %}task-card--overdue{% endif %}">
         <div class="task-card__header">
           <span class="task-card__title">{{ task.title }}</span>
+          {% if task.deadline and task.is_overdue %}
+            <span class="task-card__deadline task-card__deadline--overdue">{{ task.deadline }}</span>
+          {% endif %}
+          <a href="{% url 'task_edit' project.id task.id %}" class="task-card__trash-btn" title="Editar task" aria-label="Editar task">
+            <i class="fas fa-pen" aria-hidden="true"></i>
+          </a>
           <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
             {% csrf_token %}
             <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
@@ -89,9 +116,15 @@
   <div class="board-column">
     <h3 class="board-column__title">In Progress</h3>
     {% for task in sprint.in_progress_tasks %}
-      <div class="task-card">
+      <div class="task-card {% if task.is_overdue %}task-card--overdue{% endif %}">
         <div class="task-card__header">
           <span class="task-card__title">{{ task.title }}</span>
+          {% if task.deadline and task.is_overdue %}
+            <span class="task-card__deadline task-card__deadline--overdue">{{ task.deadline }}</span>
+          {% endif %}
+          <a href="{% url 'task_edit' project.id task.id %}" class="task-card__trash-btn" title="Editar task" aria-label="Editar task">
+            <i class="fas fa-pen" aria-hidden="true"></i>
+          </a>
           <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
             {% csrf_token %}
             <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
@@ -124,6 +157,9 @@
           <span class="task-card__title">{{ task.title }}</span>
           <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
             {% csrf_token %}
+          <a href="{% url 'task_edit' project.id task.id %}" class="task-card__trash-btn" title="Editar task" aria-label="Editar task">
+            <i class="fas fa-pen" aria-hidden="true"></i>
+          </a>
             <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
               <i class="fas fa-trash" aria-hidden="true"></i>
             </button>

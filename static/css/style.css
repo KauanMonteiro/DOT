@@ -51,6 +51,11 @@
   --msg-warning-glow: rgba(255, 184, 77, 0.35);
   --msg-info: #4da6ff;
   --msg-info-glow: rgba(77, 166, 255, 0.35);
+  --msg-info: #4da6ff;
+  --msg-info-glow: rgba(77, 166, 255, 0.35);
+
+  --color-danger: #ff4d4d;
+  --color-danger-glow: rgba(255, 77, 77, 0.35);
 }
 
 * {
@@ -1267,7 +1272,32 @@ body {
   flex-direction: column;
   gap: 10px;
 }
+.badge-muted {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-3);
+  color: var(--ink-3);
+}
 
+.task-card--overdue {
+  border-left: 3px solid var(--color-danger);
+  box-shadow: 0 0 0 1px var(--color-danger-glow);
+}
+
+.task-card__deadline {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.task-card__deadline--overdue {
+  background: rgba(255, 77, 77, 0.12);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger-glow);
+}
 /* ==========================================================================
    RESPONSIVO
    ========================================================================== */
