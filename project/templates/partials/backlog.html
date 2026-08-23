@@ -1,0 +1,29 @@
+<div id="backlog" class="modal">
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2 class="modal__title">Backlog</h2>
+      <a href="#" class="modal__close" aria-label="Fechar">×</a>
+    </div>
+
+    <div class="modal__body">
+      {% for task in backlog_tasks %}
+        <div class="backlog-item">
+          <div class="backlog-item__info">
+            <span class="backlog-item__title">{{ task.title }}</span>
+            {% if task.deadline %}
+              <span class="backlog-item__deadline text-muted">até {{ task.deadline }}</span>
+            {% endif %}
+          </div>
+          {% if sprint %}
+            <form method="post" action="{% url 'task_add_to_sprint' project.id task.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-ghost btn-sm">+ Sprint</button>
+            </form>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p class="text-muted">Backlog vazio.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>

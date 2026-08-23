@@ -1,0 +1,35 @@
+<div class="timeline">
+  <div class="timeline__scroll">
+    <div class="timeline__header">
+      <div class="timeline__grid" style="--timeline-cols: {{ timeline.days|length }};">
+        {% for day in timeline.days %}
+          <div class="timeline__day-label{% if day.is_today %} timeline__day-label--today{% endif %}">
+            {{ day.label }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="timeline__body">
+      <div class="timeline__grid" style="--timeline-cols: {{ timeline.days|length }};">
+        <div class="timeline-bar timeline-bar--sprint" style="grid-column: 1 / -1;">
+          <span class="timeline-bar__label">{{ sprint.name }}</span>
+          <span class="timeline-bar__meta">{{ sprint.done_count }}/{{ sprint.total_count }} concluídas</span>
+        </div>
+      </div>
+
+      {% for task in timeline.tasks %}
+        <div class="timeline__grid" style="--timeline-cols: {{ timeline.days|length }};">
+          <div
+            class="timeline-bar timeline-bar--task timeline-bar--{{ task.status }}"
+            style="grid-column: {{ task.start_day }} / span {{ task.duration }};"
+          >
+            <span class="timeline-bar__label">{{ task.title }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">Nenhuma task na sprint ainda.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>

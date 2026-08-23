@@ -1,22 +1,31 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+
 
 class Project(models.Model):
     name = models.CharField(max_length=50)
-    description = models.CharField(max_length=1000, blank=True)
+    description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey("user.User", on_delete=models.CASCADE, related_name="owned_projects")
+    owner = models.ForeignKey(
+        "user.User",
+        on_delete=models.CASCADE,
+        related_name="owned_projects",
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
+
 
 class MemberProject(models.Model):
     ROLE_CHOICES = (
         ("admin", "Admin"),
         ("member", "Member"),
     )
-
-    member = models.ForeignKey("user.User", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    member = models.ForeignKey("user.User", on_delete=models.CASCADE, related_name="project_memberships")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="memberships")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="member")
 
     class Meta:
@@ -25,4 +34,70 @@ class MemberProject(models.Model):
     def __str__(self):
         return f"{self.member} in {self.project} ({self.role})"
 
-    
+
+class Sprint(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="sprints")
+    name = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["start_date"]
+
+    def __str__(self):
+        return f"{self.name} ({self.project})"
+
+    def clean(self):
+        if self.start_date and self.end_date and self.end_date <= self.start_date:
+            raise ValidationError("end_date deve ser posterior a start_date.")
+
+
+class Task(models.Model):
+    STATUS_CHOICES = [
+        ("todo", "Todo"),
+        ("in_progress", "In Progress"),
+        ("done", "Done"),
+    ]
+    PRIORITY_CHOICES = [
+        ("low", "Low"),
+        ("normal", "Normal"),
+        ("high", "High"),
+    ]
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="todo")
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default="normal")
+
+    sprint = models.ForeignKey(
+        Sprint,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks",
+    )
+    assignee = models.ForeignKey(
+        "user.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_tasks",
+    )
+
+    deadline = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["priority", "deadline"]
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["deadline"]),
+        ]
+
+    def __str__(self):
+        return self.title

@@ -1,5 +1,5 @@
-from django.forms import ModelForm
-from .models import Project
+from django.forms import ModelForm,DateInput,Textarea,ValidationError
+from .models import Project,Task,MemberProject,Sprint
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -26,4 +26,42 @@ class ProjectForm(ModelForm):
             project.save()
         return project
 
-    
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ["title", "description", "priority", "sprint", "assignee", "deadline"]
+        widgets = {
+            "deadline": DateInput(attrs={"type": "date"}),
+            "description": Textarea(attrs={"rows": 4}),
+        }
+
+    def __init__(self, *args, project=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.project = project
+        if project is not None:
+            self.fields["sprint"].queryset = Sprint.objects.filter(project=project)
+            self.fields["sprint"].required = False
+
+            member_ids = project.memberships.values_list("member_id", flat=True)
+            self.fields["assignee"].queryset = self.fields["assignee"].queryset.filter(
+                id__in=list(member_ids) + [project.owner_id]
+            )
+            self.fields["assignee"].required = False
+
+
+class SprintForm(ModelForm):
+    class Meta:
+        model = Sprint
+        fields = ["name", "start_date", "end_date"]
+        widgets = {
+            "start_date": DateInput(attrs={"type": "date"}),
+            "end_date": DateInput(attrs={"type": "date"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get("start_date")
+        end = cleaned_data.get("end_date")
+        if start and end and end <= start:
+            raise ValidationError("A data de término deve ser posterior à data de início.")
+        return cleaned_data

@@ -1,0 +1,177 @@
+<body>
+  {% include "partials/header.html" %}
+  {% include "partials/backlog.html" %}
+  <main class="page-main">
+    <div class="page-heading page-heading--with-actions">
+      <h1 class="page-heading__title">{{ project.name }}</h1>
+      <a href="{% url "task_create" project.id %}" class="btn-primary">+ Task</a>
+    </div>
+
+    <div class="project-grid stats-grid">
+      <div class="card stat-card">
+        <a href="#backlog" class="card stat-card stat-card--link">
+          <strong class="stat-card__label">Backlog</strong>
+          <span class="stat-card__value">{{ backlog_count }} tasks</span>
+        </a>
+      </div>
+
+      <div class="card stat-card">
+        <strong class="stat-card__label">Current Sprint</strong>
+        {% if sprint %}
+          <span class="stat-card__value">{{ sprint.name }}</span>
+          <span class="stat-card__sub">{{ sprint.done_count }} / {{ sprint.total_count }} tasks</span>
+        {% else %}
+          <span class="stat-card__value text-muted">Nenhuma</span>
+        {% endif %}
+      </div>
+
+      <div class="card stat-card">
+        <strong class="stat-card__label">Deadline</strong>
+        {% if sprint %}
+          <span class="stat-card__value">{{ sprint.end_date }}</span>
+        {% else %}
+          <span class="stat-card__value text-muted">—</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <section class="sprint-section">
+      <div class="page-heading">
+        <h2 class="page-heading__title">Current Sprint</h2>
+        {% if sprint %}
+          <p class="page-heading__subtitle">{{ sprint.start_date }} → {{ sprint.end_date }}</p>
+        {% endif %}
+      </div>
+
+      {% if timeline %}
+        {% include "partials/sprint_timeline.html" %}
+      {% else %}
+        <div class="empty-state">
+          <p class="empty-state__text">Nenhuma sprint ativa para este projeto.</p>
+          <a href="{% url "sprint_create" project.id %}" class="btn-secondary btn-sm">+ Sprint</a>
+        </div>
+      {% endif %}
+
+{% if sprint %}
+<div class="board-grid">
+  <div class="board-column">
+    <h3 class="board-column__title">TODO</h3>
+    {% for task in sprint.todo_tasks %}
+      <div class="task-card">
+        <div class="task-card__header">
+          <span class="task-card__title">{{ task.title }}</span>
+          <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
+            {% csrf_token %}
+            <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
+              <i class="fas fa-trash" aria-hidden="true"></i>
+            </button>
+          </form>
+        </div>
+        <form method="post" action="{% url 'task_update_status' project.id task.id %}" class="task-card__status-form">
+          {% csrf_token %}
+          <select name="status" class="task-card__select">
+            <option value="todo" {% if task.status == "todo" %}selected{% endif %}>Todo</option>
+            <option value="in_progress" {% if task.status == "in_progress" %}selected{% endif %}>In Progress</option>
+            <option value="done" {% if task.status == "done" %}selected{% endif %}>Done</option>
+          </select>
+          <button type="submit" class="task-card__confirm-btn" title="Confirmar status" aria-label="Confirmar status">
+            <i class="fas fa-check" aria-hidden="true"></i>
+          </button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="text-muted">Nenhuma task pendente.</p>
+    {% endfor %}
+  </div>
+
+  <div class="board-column">
+    <h3 class="board-column__title">In Progress</h3>
+    {% for task in sprint.in_progress_tasks %}
+      <div class="task-card">
+        <div class="task-card__header">
+          <span class="task-card__title">{{ task.title }}</span>
+          <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
+            {% csrf_token %}
+            <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
+              <i class="fas fa-trash" aria-hidden="true"></i>
+            </button>
+          </form>
+        </div>
+        <form method="post" action="{% url 'task_update_status' project.id task.id %}" class="task-card__status-form">
+          {% csrf_token %}
+          <select name="status" class="task-card__select">
+            <option value="todo" {% if task.status == "todo" %}selected{% endif %}>Todo</option>
+            <option value="in_progress" {% if task.status == "in_progress" %}selected{% endif %}>In Progress</option>
+            <option value="done" {% if task.status == "done" %}selected{% endif %}>Done</option>
+          </select>
+          <button type="submit" class="task-card__confirm-btn" title="Confirmar status" aria-label="Confirmar status">
+            <i class="fas fa-check" aria-hidden="true"></i>
+          </button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="text-muted">Nenhuma task em andamento.</p>
+    {% endfor %}
+  </div>
+
+  <div class="board-column">
+    <h3 class="board-column__title">Done</h3>
+    {% for task in sprint.done_tasks %}
+      <div class="task-card task-card--done">
+        <div class="task-card__header">
+          <span class="task-card__title">{{ task.title }}</span>
+          <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
+            {% csrf_token %}
+            <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
+              <i class="fas fa-trash" aria-hidden="true"></i>
+            </button>
+          </form>
+        </div>
+        <form method="post" action="{% url 'task_update_status' project.id task.id %}" class="task-card__status-form">
+          {% csrf_token %}
+          <select name="status" class="task-card__select">
+            <option value="todo" {% if task.status == "todo" %}selected{% endif %}>Todo</option>
+            <option value="in_progress" {% if task.status == "in_progress" %}selected{% endif %}>In Progress</option>
+            <option value="done" {% if task.status == "done" %}selected{% endif %}>Done</option>
+          </select>
+          <button type="submit" class="task-card__confirm-btn" title="Confirmar status" aria-label="Confirmar status">
+            <i class="fas fa-check" aria-hidden="true"></i>
+          </button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="text-muted">Nenhuma task concluída.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="deadlines-section">
+      <div class="page-heading">
+        <h2 class="page-heading__title">Upcoming Deadlines</h2>
+        <p class="page-heading__subtitle">Tasks com deadlines próximos</p>
+      </div>
+
+      <div class="project-grid">
+        {% for task in upcoming_deadline_tasks %}
+          <div class="card">
+            <h3 class="card__title">{{ task.title }}</h3>
+            <p class="card__text">Vence em {{ task.deadline }}</p>
+          </div>
+        {% empty %}
+          <div class="empty-state">
+            <p class="empty-state__text">Nenhum deadline próximo.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  {% include "partials/footer.html" %}
+</body>
+</html>
