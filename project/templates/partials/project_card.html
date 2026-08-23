@@ -4,6 +4,9 @@
     <p class="project-card__desc">{{ project.description }}</p>
   </div>
   <div class="project-card__footer">
+    {% if project.can_manage_team %}
+      <a href="{% url "member_add" project.id %}" class="btn-secondary project-card__btn">+ Equipe</a>
+    {% endif %}
     <a href="{% url "project_detail" project.id %}" class="btn-secondary project-card__btn">Ver mais</a>
   </div>
 </div>

@@ -1,5 +1,6 @@
-from django.forms import ModelForm,DateInput,Textarea,ValidationError
-from .models import Project,Task,MemberProject,Sprint
+from django.forms import ModelForm, DateInput, Textarea, ValidationError, Form, CharField, TextInput
+from .models import Project, Task, MemberProject, Sprint
+from user.models import User
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -65,3 +66,38 @@ class SprintForm(ModelForm):
         if start and end and end <= start:
             raise ValidationError("A data de término deve ser posterior à data de início.")
         return cleaned_data
+
+
+class AddMemberForm(Form):
+    code = CharField(
+        max_length=20,
+        label="Código do usuário",
+        widget=TextInput(attrs={"placeholder": "Ex: A1B2C3"}),
+    )
+
+    def __init__(self, *args, project=None, **kwargs):
+        self.project = project
+        super().__init__(*args, **kwargs)
+
+    def clean_code(self):
+        code = self.cleaned_data["code"].strip().upper()
+        try:
+            user = User.objects.get(code=code)
+        except User.DoesNotExist:
+            raise ValidationError("Nenhum usuário encontrado com esse código.")
+
+        if user == self.project.owner:
+            raise ValidationError("Este usuário já é o dono do projeto.")
+
+        if MemberProject.objects.filter(project=self.project, member=user).exists():
+            raise ValidationError("Este usuário já faz parte da equipe.")
+
+        self.cleaned_data["user"] = user
+        return code
+
+    def save(self):
+        return MemberProject.objects.create(
+            project=self.project,
+            member=self.cleaned_data["user"],
+            role="member",
+        )

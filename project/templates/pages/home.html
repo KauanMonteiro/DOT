@@ -4,7 +4,13 @@
 {% include "partials/header.html" %}
 
 <main class="page-main">
-
+  <div class="page-heading">
+    <h1 class="page-heading__title">Seja bem-vindo, {{ user.username }}</h1>
+    <p class="page-heading__subtitle">
+      Seu código de usuário: <span class="badge">{{ user.code }}</span>
+    </p>
+  </div>
+<div class="divider"></div>
   <div class="page-heading">
     <h2 class="page-heading__title">Seus projetos</h2>
     <p class="page-heading__subtitle">Acompanhe e gerencie tudo o que você está construindo.</p>

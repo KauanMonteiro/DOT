@@ -3,19 +3,32 @@ from django.urls import reverse
 from .models import Project
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .forms import ProjectForm,TaskForm,SprintForm
+from .forms import ProjectForm,TaskForm,SprintForm,AddMemberForm
 from django.contrib import messages
-from .models import Project,Task
+from .models import Project,Task,MemberProject
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.http import require_POST
 @login_required
+@login_required
 def home(request):
+    user = request.user
     projects = Project.objects.filter(
         Q(owner=request.user) | Q(memberships__member=request.user)
     ).distinct()
-    return render(request,'pages/home.html',{'projects':projects})
 
+    admin_project_ids = set(
+        MemberProject.objects.filter(
+            member=request.user, role="admin"
+        ).values_list("project_id", flat=True)
+    )
+
+    for project in projects:
+        project.can_manage_team = (
+            project.owner_id == request.user.id or project.id in admin_project_ids
+        )
+
+    return render(request, 'pages/home.html', {'projects': projects,'user':user})
 @login_required
 def register_project(request):
     form = ProjectForm(request.POST or None, user=request.user)
@@ -233,3 +246,19 @@ def delete_sprint(request, project_id, sprint_id):
     sprint.delete()
     messages.success(request, "Sprint removida com sucesso!")
     return redirect("project_detail", project_id=project.id)
+
+
+@login_required
+def add_member(request, project_id):
+    project = _get_project_as_owner_or_admin(request, project_id)  # só owner ou admin adicionam membros
+
+    form = AddMemberForm(request.POST or None, project=project)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Membro adicionado à equipe com sucesso!")
+            return redirect("project_detail", project_id=project.id)
+        else:
+            messages.error(request, "Erro ao adicionar membro. Verifique o código informado.")
+
+    return render(request, "pages/form.html", {"form": form, "project": project})
