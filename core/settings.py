@@ -111,7 +111,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
+AUTH_USER_MODEL = 'user.User'
+LOGIN_URL = 'user:login'
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -122,3 +123,4 @@ MAILERS = {
     },
 }
 AUTH_USER_MODEL = "user.User"
+

@@ -1,0 +1,48 @@
+<body>
+  {% include "partials/header.html" %}
+
+  <main class="page-main">
+    <div class="page-heading">
+      <h2 class="page-heading__title">Entrar</h2>
+      <p class="page-heading__subtitle">Acesse sua conta para continuar</p>
+    </div>
+
+
+    <form method="post" class="django-form" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="username">Usuário</label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          value="{{ request.POST.username|default:'' }}"
+          placeholder="Digite seu usuário"
+          autocomplete="username"
+          autofocus
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Digite sua senha"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <div class="form-actions btn-group btn-group--end">
+        <button type="submit" class="btn-submit">Entrar</button>
+      </div>
+    </form>
+  </main>
+
+  {% include "partials/footer.html" %}
+</body>
+</html>
