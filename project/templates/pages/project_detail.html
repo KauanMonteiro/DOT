@@ -1,6 +1,7 @@
 <body>
   {% include "partials/header.html" %}
   {% include "partials/backlog.html" %}
+  {% include "partials/team.html" %}
   <main class="page-main">
     <div class="page-heading page-heading--with-actions">
       <h1 class="page-heading__title">{{ project.name }}</h1>
@@ -14,7 +15,12 @@
           <span class="stat-card__value">{{ backlog_count }} tasks</span>
         </a>
       </div>
-
+      <div class="card stat-card">
+        <a href="#team" class="card stat-card stat-card--link">
+          <strong class="stat-card__label">Equipe</strong>
+          <span class="stat-card__value">{{ team_members|length|add:1 }} pessoas</span>
+        </a>
+      </div>
       <div class="card stat-card">
         <strong class="stat-card__label">Current Sprint</strong>
         {% if sprint %}

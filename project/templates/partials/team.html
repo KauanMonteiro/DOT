@@ -1,0 +1,34 @@
+<div id="team" class="modal">
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2 class="modal__title">Equipe</h2>
+      <a href="#" class="modal__close" aria-label="Fechar">×</a>
+    </div>
+
+    <div class="modal__body">
+      <div class="backlog-item">
+        <div class="backlog-item__info">
+          <span class="backlog-item__title">{{ project.owner }}</span>
+          <span class="backlog-item__deadline text-muted">Owner</span>
+        </div>
+      </div>
+
+      {% for membership in team_members %}
+        <div class="backlog-item">
+          <div class="backlog-item__info">
+            <span class="backlog-item__title">{{ membership.member }}</span>
+            <span class="backlog-item__deadline text-muted">{{ membership.get_role_display }}</span>
+          </div>
+            {% if can_manage_team %}
+              <form method="post" action="{% url 'delete_member' project.id membership.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost btn-sm">Remover</button>
+              </form>
+            {% endif %}
+        </div>
+      {% empty %}
+        <p class="text-muted">Nenhum membro adicional.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>

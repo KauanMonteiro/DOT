@@ -557,11 +557,6 @@ body {
   border-top: 1px solid var(--border-1);
 }
 
-/* ==========================================================================
-   BOTÕES — sem seta animada. Continuam com bordas animadas, camadas de
-   sombra, brilho pulsante etc. Continuam sendo componentes independentes:
-   nunca herdam do container.
-   ========================================================================== */
 
 .btn-group {
   display: flex;

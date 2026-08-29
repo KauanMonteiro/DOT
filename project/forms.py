@@ -1,6 +1,7 @@
 from django.forms import ModelForm, DateInput, Textarea, ValidationError, Form, CharField, TextInput
 from .models import Project, Task, MemberProject, Sprint
 from user.models import User
+from django.db.models import Q
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -44,9 +45,9 @@ class TaskForm(ModelForm):
             self.fields["sprint"].required = False
 
             member_ids = project.memberships.values_list("member_id", flat=True)
-            self.fields["assignee"].queryset = self.fields["assignee"].queryset.filter(
-                id__in=list(member_ids) + [project.owner_id]
-            )
+            self.fields["assignee"].queryset = User.objects.filter(
+                Q(pk=project.owner_id) | Q(pk__in=member_ids)
+            ).distinct()
             self.fields["assignee"].required = False
 
 

@@ -9,6 +9,13 @@
     <form method="post" enctype="multipart/form-data" class="django-form" novalidate>
       {% csrf_token %}
 
+      {% if form.non_field_errors %}
+      <div class="form-group has-error">
+          {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+
       {% for field in form %}
       <div class="form-group {% if field.errors %}has-error{% endif %}">
         {{ field.label_tag }}
