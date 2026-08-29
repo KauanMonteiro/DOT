@@ -1,0 +1,30 @@
+{% if sprint %}
+<div class="board-grid">
+  <div class="board-column">
+    <h3 class="board-column__title">TODO</h3>
+    {% for task in sprint.todo_tasks %}
+      {% include "partials/task_card.html" %}
+    {% empty %}
+      <p class="text-muted">Nenhuma task pendente.</p>
+    {% endfor %}
+  </div>
+
+  <div class="board-column">
+    <h3 class="board-column__title">In Progress</h3>
+    {% for task in sprint.in_progress_tasks %}
+      {% include "partials/task_card.html" %}
+    {% empty %}
+      <p class="text-muted">Nenhuma task em andamento.</p>
+    {% endfor %}
+  </div>
+
+  <div class="board-column">
+    <h3 class="board-column__title">Done</h3>
+    {% for task in sprint.done_tasks %}
+      {% include "partials/task_card.html" %}
+    {% empty %}
+      <p class="text-muted">Nenhuma task concluída.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

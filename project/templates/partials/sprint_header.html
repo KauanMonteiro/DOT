@@ -1,0 +1,27 @@
+<div class="page-heading page-heading--with-actions">
+  <div>
+    <h2 class="page-heading__title">Current Sprint</h2>
+    {% if sprint %}
+      <p class="page-heading__subtitle">
+        {{ sprint.start_date }} → {{ sprint.end_date }}
+        {% if sprint.is_over %}
+          <span class="badge badge-muted">Encerrada</span>
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if sprint %}
+    <div class="btn-group">
+      <a href="{% url 'sprint_edit' project.id sprint.id %}" class="task-card__trash-btn" title="Editar sprint" aria-label="Editar sprint">
+        <i class="fas fa-pen" aria-hidden="true"></i>
+      </a>
+      <form method="post" action="{% url 'sprint_delete' project.id sprint.id %}" onsubmit="return confirm('Tem certeza que deseja apagar esta sprint? As tasks vinculadas voltarão para o backlog.');">
+        {% csrf_token %}
+        <button type="submit" class="task-card__trash-btn" title="Apagar sprint" aria-label="Apagar sprint">
+          <i class="fas fa-trash" aria-hidden="true"></i>
+        </button>
+      </form>
+    </div>
+  {% endif %}
+</div>

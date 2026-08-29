@@ -1,0 +1,29 @@
+<div class="task-card {% if task.status == 'done' %}task-card--done{% elif task.is_overdue %}task-card--overdue{% endif %}">
+  <div class="task-card__header">
+    <span class="task-card__title">{{ task.title }}</span>
+    {% if task.deadline and task.is_overdue and task.status != 'done' %}
+      <span class="task-card__deadline task-card__deadline--overdue">{{ task.deadline }}</span>
+    {% endif %}
+    <a href="{% url 'task_edit' project.id task.id %}" class="task-card__trash-btn" title="Editar task" aria-label="Editar task">
+      <i class="fas fa-pen" aria-hidden="true"></i>
+    </a>
+    <form method="post" action="{% url 'task_remove_from_sprint' project.id task.id %}" class="task-card__trash-form">
+      {% csrf_token %}
+      <button type="submit" class="task-card__trash-btn" title="Voltar para o backlog" aria-label="Voltar para o backlog">
+        <i class="fas fa-trash" aria-hidden="true"></i>
+      </button>
+    </form>
+  </div>
+
+  <form method="post" action="{% url 'task_update_status' project.id task.id %}" class="task-card__status-form">
+    {% csrf_token %}
+    <select name="status" class="task-card__select">
+      <option value="todo" {% if task.status == "todo" %}selected{% endif %}>Todo</option>
+      <option value="in_progress" {% if task.status == "in_progress" %}selected{% endif %}>In Progress</option>
+      <option value="done" {% if task.status == "done" %}selected{% endif %}>Done</option>
+    </select>
+    <button type="submit" class="task-card__confirm-btn" title="Confirmar status" aria-label="Confirmar status">
+      <i class="fas fa-check" aria-hidden="true"></i>
+    </button>
+  </form>
+</div>

@@ -1,0 +1,34 @@
+<div class="project-grid stats-grid">
+  <div class="card stat-card">
+    <a href="#backlog" class="card stat-card stat-card--link">
+      <strong class="stat-card__label">Backlog</strong>
+      <span class="stat-card__value">{{ backlog_count }} tasks</span>
+    </a>
+  </div>
+
+  <div class="card stat-card">
+    <a href="#team" class="card stat-card stat-card--link">
+      <strong class="stat-card__label">Equipe</strong>
+      <span class="stat-card__value">{{ team_members|length|add:1 }} pessoas</span>
+    </a>
+  </div>
+
+  <div class="card stat-card">
+    <strong class="stat-card__label">Current Sprint</strong>
+    {% if sprint %}
+      <span class="stat-card__value">{{ sprint.name }}</span>
+      <span class="stat-card__sub">{{ sprint.done_count }} / {{ sprint.total_count }} tasks</span>
+    {% else %}
+      <span class="stat-card__value text-muted">Nenhuma</span>
+    {% endif %}
+  </div>
+
+  <div class="card stat-card">
+    <strong class="stat-card__label">Deadline</strong>
+    {% if sprint %}
+      <span class="stat-card__value">{{ sprint.end_date }}</span>
+    {% else %}
+      <span class="stat-card__value text-muted">—</span>
+    {% endif %}
+  </div>
+</div>

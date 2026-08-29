@@ -1,0 +1,19 @@
+<section class="deadlines-section">
+  <div class="page-heading">
+    <h2 class="page-heading__title">Upcoming Deadlines</h2>
+    <p class="page-heading__subtitle">Tasks com deadlines próximos</p>
+  </div>
+
+  <div class="project-grid">
+    {% for task in upcoming_deadline_tasks %}
+      <div class="card">
+        <h3 class="card__title">{{ task.title }}</h3>
+        <p class="card__text">Vence em {{ task.deadline }}</p>
+      </div>
+    {% empty %}
+      <div class="empty-state">
+        <p class="empty-state__text">Nenhum deadline próximo.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
