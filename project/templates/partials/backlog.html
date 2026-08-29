@@ -9,7 +9,9 @@
       {% for task in backlog_tasks %}
         <div class="backlog-item">
           <div class="backlog-item__info">
-            <span class="backlog-item__title">{{ task.title }}</span>
+            <a href="#task-{{ task.id }}" class="task-card__title-link">
+              <span class="backlog-item__title">{{ task.title }}</span>
+            </a>
             {% if task.deadline %}
               <span class="backlog-item__deadline text-muted">até {{ task.deadline }}</span>
             {% endif %}

@@ -1,38 +1,33 @@
-<body>
-  {% include "partials/header.html" %}
-  {% include "partials/backlog.html" %}
-  {% include "partials/team.html" %}
+{% include "partials/header.html" %}
+{% include "partials/backlog.html" %}
+{% include "partials/team.html" %}
+{% include "partials/backlog_task_modals.html" %}
+<main class="page-main">
+  <div class="page-heading page-heading--with-actions">
+    <h1 class="page-heading__title">{{ project.name }}</h1>
+    <a href="{% url "task_create" project.id %}" class="btn-primary">+ Task</a>
+  </div>
 
-  <main class="page-main">
-    <div class="page-heading page-heading--with-actions">
-      <h1 class="page-heading__title">{{ project.name }}</h1>
-      <a href="{% url "task_create" project.id %}" class="btn-primary">+ Task</a>
-    </div>
+  {% include "partials/stats.html" %}
+  <div class="divider"></div>
 
-    {% include "partials/stats.html" %}
+  <section class="sprint-section">
+    {% include "partials/sprint_header.html" %}
 
-    <div class="divider"></div>
+    {% if timeline %}
+      {% include "partials/sprint_timeline.html" %}
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-state__text">Nenhuma sprint ativa para este projeto.</p>
+        <a href="{% url "sprint_create" project.id %}" class="btn-secondary btn-sm">+ Sprint</a>
+      </div>
+    {% endif %}
 
-    <section class="sprint-section">
-      {% include "partials/sprint_header.html" %}
+    {% include "partials/sprint_board.html" %}
+  </section>
 
-      {% if timeline %}
-        {% include "partials/sprint_timeline.html" %}
-      {% else %}
-        <div class="empty-state">
-          <p class="empty-state__text">Nenhuma sprint ativa para este projeto.</p>
-          <a href="{% url "sprint_create" project.id %}" class="btn-secondary btn-sm">+ Sprint</a>
-        </div>
-      {% endif %}
+  <div class="divider"></div>
+  {% include "partials/deadlines.html" %}
+</main>
 
-      {% include "partials/sprint_board.html" %}
-    </section>
-
-    <div class="divider"></div>
-
-    {% include "partials/deadlines.html" %}
-  </main>
-
-  {% include "partials/footer.html" %}
-</body>
-</html>
+{% include "partials/footer.html" %}

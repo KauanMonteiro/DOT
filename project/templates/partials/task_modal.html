@@ -1,0 +1,57 @@
+<div id="task-{{ task.id }}" class="modal">
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2 class="modal__title">{{ task.title }}</h2>
+      <a href="#" class="modal__close" aria-label="Fechar">×</a>
+    </div>
+
+    <div class="modal__body">
+      <div class="task-detail__badges">
+        <span class="badge">{{ task.get_status_display }}</span>
+        <span class="badge">Prioridade: {{ task.get_priority_display }}</span>
+        {% if task.is_overdue %}
+          <span class="badge badge-accent">Atrasada</span>
+        {% endif %}
+      </div>
+
+      {% if task.description %}
+        <p class="task-detail__description">{{ task.description|linebreaksbr }}</p>
+      {% else %}
+        <p class="text-muted">Sem descrição.</p>
+      {% endif %}
+
+      <div class="task-detail__meta">
+        <div class="task-detail__row">
+          <span class="task-detail__label">Responsável</span>
+          <span class="task-detail__value">
+            {% if task.assignee %}{{ task.assignee }}{% else %}<span class="text-muted">Não atribuída</span>{% endif %}
+          </span>
+        </div>
+        <div class="task-detail__row">
+          <span class="task-detail__label">Sprint</span>
+          <span class="task-detail__value">
+            {% if task.sprint %}{{ task.sprint.name }}{% else %}<span class="text-muted">Backlog</span>{% endif %}
+          </span>
+        </div>
+        <div class="task-detail__row">
+          <span class="task-detail__label">Deadline</span>
+          <span class="task-detail__value">
+            {% if task.deadline %}{{ task.deadline }}{% else %}<span class="text-muted">Sem prazo</span>{% endif %}
+          </span>
+        </div>
+        <div class="task-detail__row">
+          <span class="task-detail__label">Criada em</span>
+          <span class="task-detail__value">{{ task.created_at }}</span>
+        </div>
+        <div class="task-detail__row">
+          <span class="task-detail__label">Atualizada em</span>
+          <span class="task-detail__value">{{ task.updated_at }}</span>
+        </div>
+      </div>
+
+      <div class="task-detail__actions">
+        <a href="{% url 'task_edit' project.id task.id %}" class="btn-secondary btn-sm">Editar task</a>
+      </div>
+    </div>
+  </div>
+</div>

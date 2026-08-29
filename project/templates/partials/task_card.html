@@ -1,6 +1,8 @@
 <div class="task-card {% if task.status == 'done' %}task-card--done{% elif task.is_overdue %}task-card--overdue{% endif %}">
   <div class="task-card__header">
-    <span class="task-card__title">{{ task.title }}</span>
+    <a href="#task-{{ task.id }}" class="task-card__title-link">
+      <span class="task-card__title">{{ task.title }}</span>
+    </a>
     {% if task.deadline and task.is_overdue and task.status != 'done' %}
       <span class="task-card__deadline task-card__deadline--overdue">{{ task.deadline }}</span>
     {% endif %}
@@ -27,3 +29,5 @@
     </button>
   </form>
 </div>
+
+{% include "partials/task_modal.html" %}

@@ -278,3 +278,15 @@ def delete_member(request, project_id, member_id):
     membership.delete()
     messages.success(request, "Membro removido da equipe com sucesso!")
     return redirect(f"{reverse('project_detail', args=[project.id])}#team")
+
+
+def task_detail(request,project_id,task_id):
+    project = _get_project_as_owner_or_admin(request, project_id)
+    taks = get_object_or_404(Task, pk= task_id)
+
+@login_required
+def task_detail(request, project_id, task_id):
+    project = _get_owned_or_member_project(request, project_id)
+    task = get_object_or_404(project.tasks, pk=task_id)
+
+    return render(request, "pages/task_detail.html", {"project": project, "task": task})
